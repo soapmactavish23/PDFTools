@@ -1,3 +1,7 @@
 pypdf
 streamlit
 streamlit-option-menu
+jinja2
+openpyxl
+pandas
+pdfkit
