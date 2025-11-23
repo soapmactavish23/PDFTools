@@ -1,6 +1,8 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
+import menu_extrair
+
 st.set_page_config(
     page_title="PDFTools",
     page_icon=':page_facing_up:',
@@ -31,14 +33,18 @@ escolha = option_menu(
     default_index=0
 )
 
-match escolha:
-    case 'Extrair página':
-        st.write('Clicou extrair')
-    case 'Combinar PDFs':
-        st.write('Clicou combinar PDFs')
-    case "Adicionar marca d'água":
-        st.write('Clicou adicionar marca')
-    case "Imagens para PDF":
-        st.write('Clicou imagens para PDF')
-    case "Excel para PDF":
-        st.write('Clicou excel para PDF')
+_, col2, _ = st.columns(3)
+with col2:
+    match escolha:
+        case 'Extrair página':
+            menu_extrair.exibir_manu_extrair(col2)
+        case _:
+            st.warning('Implementar página')
+#        case 'Combinar PDFs':
+#            st.write('Clicou combinar PDFs')
+#        case "Adicionar marca d'água":
+#            st.write('Clicou adicionar marca')
+#        case "Imagens para PDF":
+#            st.write('Clicou imagens para PDF')
+#        case "Excel para PDF":
+#            st.write('Clicou excel para PDF')
