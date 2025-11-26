@@ -37,7 +37,7 @@ _, col2, _ = st.columns(3)
 with col2:
     match escolha:
         case 'Extrair página':
-            menu_extrair.exibir_manu_extrair(col2)
+            menu_extrair.exibir_menu_extrair(col2)
         case _:
             st.warning('Implementar página')
 #        case 'Combinar PDFs':

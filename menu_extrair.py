@@ -1,6 +1,13 @@
+import tempfile
+from pathlib import Path
+
+import pypdf
 import streamlit as st
 
-def exibir_manu_extrair(coluna):
+from utilidades import pegar_dados_pdf
+
+
+def exibir_menu_extrair(coluna):
     with coluna:
         st.markdown("""
             # Extrair página PDF
@@ -26,12 +33,30 @@ def exibir_manu_extrair(coluna):
             disabled=botoes_desativados)
 
         if clicou_processar:
-            #dados_pdf = exibir_manu_extrair(arquivo_pdf=arquivo_pdf, numero_pagina=numero_pagina)
-            dados_pdf = ''
+            dados_pdf = extrair_pagina_pdf(arquivo_pdf=arquivo_pdf, numero_pagina=numero_pagina)
+
+            if dados_pdf is None:
+                st.warning(f'PDF não possui página de número {numero_pagina}!')
+                return
+
+            nome_arquivo = f'{Path(arquivo_pdf.name).stem}_pg{numero_pagina:03d}.pdf'
             st.download_button(
                 'Clique para fazer download do arquivo PDF',
                 type='primary',
                 data=dados_pdf,
-                file_name='teste.txt',
-                use_container_width=True,
+                file_name=nome_arquivo,
+                mime='application/pdf',
+                use_container_width=True
             )
+
+def extrair_pagina_pdf(arquivo_pdf, numero_pagina):
+    leitor = pypdf.PdfReader(arquivo_pdf)
+    try:
+        pagina = leitor.pages[numero_pagina - 1]
+    except IndexError:
+        return None
+
+    escritor = pypdf.PdfWriter()
+    escritor.add_page(pagina)
+
+    return pegar_dados_pdf(escritor)
