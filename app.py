@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
+import menu_combinar
 import menu_extrair
 
 st.set_page_config(
@@ -38,10 +39,10 @@ with col2:
     match escolha:
         case 'Extrair página':
             menu_extrair.exibir_menu_extrair(col2)
+        case 'Combinar PDFs':
+            menu_combinar.exibir_menu_combinar(col2)
         case _:
             st.warning('Implementar página')
-#        case 'Combinar PDFs':
-#            st.write('Clicou combinar PDFs')
 #        case "Adicionar marca d'água":
 #            st.write('Clicou adicionar marca')
 #        case "Imagens para PDF":
