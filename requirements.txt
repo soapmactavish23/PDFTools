@@ -5,3 +5,4 @@ jinja2
 openpyxl
 pandas
 pdfkit
+Pillow

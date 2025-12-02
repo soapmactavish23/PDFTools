@@ -3,6 +3,7 @@ from streamlit_option_menu import option_menu
 
 import menu_combinar
 import menu_extrair
+import menu_imagens
 import menu_marca_dagua
 
 st.set_page_config(
@@ -44,9 +45,9 @@ with col2:
             menu_combinar.exibir_menu_combinar(col2)
         case "Adicionar marca d'água":
             menu_marca_dagua.exibir_menu_marca_dagua(col2)
+        case "Imagens para PDF":
+            menu_imagens.exibir_menu_imagens(col2)
         case _:
             st.warning('Implementar página')
-#        case "Imagens para PDF":
-#            st.write('Clicou imagens para PDF')
 #        case "Excel para PDF":
 #            st.write('Clicou excel para PDF')
