@@ -5,6 +5,7 @@ import menu_combinar
 import menu_extrair
 import menu_imagens
 import menu_marca_dagua
+import menu_relatorio
 
 st.set_page_config(
     page_title="PDFTools",
@@ -47,7 +48,7 @@ with col2:
             menu_marca_dagua.exibir_menu_marca_dagua(col2)
         case "Imagens para PDF":
             menu_imagens.exibir_menu_imagens(col2)
+        case "Excel para PDF":
+            menu_relatorio.exibir_menu_relatorio(col2)
         case _:
             st.warning('Implementar página')
-#        case "Excel para PDF":
-#            st.write('Clicou excel para PDF')
