@@ -1,5 +1,11 @@
+import tempfile
+from pathlib import Path
+
+import pypdf
 import streamlit as st
 from PIL import Image
+
+from utilidades import pegar_dados_pdf
 
 def exibir_menu_imagens(coluna):
     with coluna:
@@ -28,7 +34,7 @@ def exibir_menu_imagens(coluna):
         if clicou_processar:
             dados_pdf = gerar_arquivo_pdf_com_imagens(imagens=imagens)
 
-            nome_arquivo = f'imagenspdf'
+            nome_arquivo = 'imagens.pdf'
             st.download_button(
                 'Clique para fazer download do arquivo PDF',
                 type='primary',
@@ -38,14 +44,44 @@ def exibir_menu_imagens(coluna):
                 use_container_width=True
             )
 
+
+
 def gerar_arquivo_pdf_com_imagens(imagens):
     imagens_pillow = []
     for imagem in imagens:
         dados_imagem = Image.open(imagem)
+        if dados_imagem.mode == 'RGBA':
+            dados_imagem = remover_canal_transparencia(imagem=imagem)
         imagens_pillow.append(dados_imagem)
-
     primeira_imagem = imagens_pillow[0]
     demais_imagens = imagens_pillow[1:]
 
-    primeira_imagem.save('imagens.pdf', save_all=True, append_image=demais_imagens)
-    return ''
+    with tempfile.TemporaryDirectory() as tempdir:
+        nome_arquivo = Path(tempdir) / 'temp.pdf'
+        primeira_imagem.save(nome_arquivo, save_all=True, append_images=demais_imagens)
+        pdf_imagens = pypdf.PdfReader(nome_arquivo)
+
+    escritor = pypdf.PdfWriter()
+    for pagina in pdf_imagens.pages:
+        pagina_em_branco = escritor.add_blank_page(
+            width=pypdf.PaperSize.A4.width,
+            height=pypdf.PaperSize.A4.height,
+        )
+        # Ajuste dimensões
+        if pagina.mediabox.top > pagina.mediabox.right:  # Imagem está na vertical
+            scale = pagina_em_branco.mediabox.top / pagina.mediabox.top * 0.9
+        else:  # Imagem está na horizontal (ou é quadrada)
+            scale = pagina_em_branco.mediabox.right / pagina.mediabox.right * 0.9
+        # Ajuste posicionamento
+        tx = (pagina_em_branco.mediabox.right - pagina.mediabox.right * scale) / 2
+        ty = (pagina_em_branco.mediabox.top - pagina.mediabox.top * scale) / 2
+        transformation = pypdf.Transformation().scale(scale).translate(tx=tx, ty=ty)
+        pagina_em_branco.merge_transformed_page(pagina, transformation, over=True)
+    dados_pdf = pegar_dados_pdf(escritor=escritor)
+    return dados_pdf
+
+def remover_canal_transparencia(imagem):
+    imagem_rgba = Image.open(imagem)
+    imagem_rgb = Image.new('RGB', imagem_rgba.size, (255, 255, 255))
+    imagem_rgb.paste(imagem_rgba, mask=imagem_rgba.split()[3])
+    return imagem_rgb
